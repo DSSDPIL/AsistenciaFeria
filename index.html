@@ -21,7 +21,7 @@
 
             const url = "https://script.google.com/macros/s/AKfycbzo5vFnzRA0vrcu-2sUp0OjhuQ49vMFA99hiy9HrJs/dev" + encodeURIComponent(idAsistente);
             
-            fetch(url)
+            window.open(url, "_blank");
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Respuesta del servidor no válida');
@@ -58,3 +58,4 @@
 </body>
 
 </html>
+
