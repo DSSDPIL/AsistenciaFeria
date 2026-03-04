@@ -19,39 +19,35 @@
 const html5QrCode = new Html5Qrcode("reader");
 const mensaje = document.getElementById("mensaje");
 
-function registrarAsistencia(id) {
+// 🔴 PEGA AQUÍ TU NUEVA URL /exec
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw4HEJn1Vu7_pFNaR-xzV5Gnvv_t0tuaUtliakithn16k-Vm3FzT54zSOgIRh-HPvs/exec";
 
-    const url = "https://script.google.com/macros/s/AKfycbz3b8CNVjHxD7pfap5nXRVFoOoNcJyOQPvDnuOi6cPn4sJbCVBvvay7yvpseYoM4PgN/exec" 
-                + encodeURIComponent(id);
+function registrarAsistencia(id) {
 
     mensaje.innerHTML = "ID leído: " + id + "<br>Registrando...";
 
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
+    const url = WEB_APP_URL + "?id=" + encodeURIComponent(id);
 
-    iframe.onload = function() {
-        try {
-            const response = iframe.contentDocument.body.innerText;
-            mensaje.innerHTML = "ID leído: " + id + "<br>" + response;
-        } catch (e) {
-            mensaje.innerHTML = "ID leído: " + id + "<br>Registro enviado";
-        }
-
-        document.body.removeChild(iframe);
-    };
-
-    document.body.appendChild(iframe);
+    fetch(url)
+        .then(response => response.text())
+        .then(data => {
+            mensaje.innerHTML = "ID leído: " + id + "<br>" + data;
+        })
+        .catch(() => {
+            mensaje.innerHTML = "Error al conectar con el servidor";
+        });
 }
 
 function onScanSuccess(decodedText) {
 
     html5QrCode.stop().then(() => {
+
         registrarAsistencia(decodedText);
 
         setTimeout(() => {
             iniciar();
         }, 2000);
+
     });
 }
 
@@ -66,4 +62,7 @@ function iniciar() {
 iniciar();
 
 </script>
+
+</body>
+</html>
 
