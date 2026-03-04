@@ -21,24 +21,29 @@ const mensaje = document.getElementById("mensaje");
 
 function registrarAsistencia(id) {
 
-    const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" + encodeURIComponent(id);
+    const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" 
+                + encodeURIComponent(id);
 
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
+    mensaje.innerHTML = "ID leído: " + id + "<br>Registrando...";
 
-    mensaje.innerHTML = "ID leído: " + id;
+    fetch(url)
+        .then(response => response.text())
+        .then(data => {
+            mensaje.innerHTML = "ID leído: " + id + "<br>" + data;
+        })
+        .catch(error => {
+            mensaje.innerHTML = "Error al registrar asistencia";
+        });
 }
 
 function onScanSuccess(decodedText) {
 
-    registrarAsistencia(decodedText);
-
     html5QrCode.stop().then(() => {
+        registrarAsistencia(decodedText);
+
         setTimeout(() => {
             iniciar();
-        }, 1000);
+        }, 2000);
     });
 }
 
@@ -53,6 +58,3 @@ function iniciar() {
 iniciar();
 
 </script>
-
-</body>
-</html>
