@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <title>Lector QR - Feria 2026</title>
 
-    <!-- Librería del lector QR -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         body {
@@ -20,9 +19,15 @@
         }
 
         #resultado {
-            margin-top: 20px;
-            font-size: 22px;
+            margin-top: 15px;
+            font-size: 20px;
             font-weight: bold;
+        }
+
+        #idLeido {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #444;
         }
     </style>
 </head>
@@ -33,24 +38,22 @@
 
     <div id="reader"></div>
 
+    <div id="idLeido"></div>
     <div id="resultado"></div>
 
     <script>
 
+        const readerDiv = document.getElementById("reader");
+        const resultado = document.getElementById("resultado");
+        const idLeido = document.getElementById("idLeido");
+
+        const html5QrCode = new Html5Qrcode("reader");
+
         function registrarAsistencia(idAsistente) {
-
-            const resultado = document.getElementById("resultado");
-
-            if (!idAsistente) {
-                resultado.innerHTML = "❌ Código inválido";
-                resultado.style.color = "red";
-                return;
-            }
 
             const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" 
                         + encodeURIComponent(idAsistente);
 
-            // Enviar sin abrir pestaña (iframe oculto)
             const iframe = document.createElement("iframe");
             iframe.style.display = "none";
             iframe.src = url;
@@ -60,22 +63,33 @@
             resultado.style.color = "green";
         }
 
-
         function onScanSuccess(decodedText) {
+
+            // Mostrar ID escaneado
+            idLeido.innerHTML = "ID leído: <b>" + decodedText + "</b>";
+
+            // Registrar asistencia
             registrarAsistencia(decodedText);
+
+            // Pequeña pausa antes de volver a escanear
+            html5QrCode.stop().then(() => {
+                setTimeout(iniciarCamara, 1500);
+            });
         }
 
-        function onScanFailure(error) {
-            // Solo ignora errores de lectura
+        function iniciarCamara() {
+            html5QrCode.start(
+                { facingMode: "environment" }, // Cámara trasera automática
+                {
+                    fps: 10,
+                    qrbox: 250
+                },
+                onScanSuccess
+            );
         }
 
-        const html5QrCodeScanner = new Html5QrcodeScanner(
-            "reader",
-            { fps: 10, qrbox: 250 },
-            false
-        );
-
-        html5QrCodeScanner.render(onScanSuccess);
+        // Iniciar automáticamente
+        iniciarCamara();
 
     </script>
 
