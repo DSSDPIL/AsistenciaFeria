@@ -26,14 +26,22 @@ function registrarAsistencia(id) {
 
     mensaje.innerHTML = "ID leído: " + id + "<br>Registrando...";
 
-    fetch(url)
-        .then(response => response.text())
-        .then(data => {
-            mensaje.innerHTML = "ID leído: " + id + "<br>" + data;
-        })
-        .catch(error => {
-            mensaje.innerHTML = "Error al registrar asistencia";
-        });
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+
+    iframe.onload = function() {
+        try {
+            const response = iframe.contentDocument.body.innerText;
+            mensaje.innerHTML = "ID leído: " + id + "<br>" + response;
+        } catch (e) {
+            mensaje.innerHTML = "ID leído: " + id + "<br>Registro enviado";
+        }
+
+        document.body.removeChild(iframe);
+    };
+
+    document.body.appendChild(iframe);
 }
 
 function onScanSuccess(decodedText) {
