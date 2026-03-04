@@ -3,51 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>Lector QR - Feria 2026</title>
-
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 30px;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            margin-top: 20px;
         }
 
         #reader {
-            width: 300px;
-            margin: auto;
-        }
-
-        #resultado {
-            margin-top: 15px;
-            font-size: 20px;
-            font-weight: bold;
+            width: 90%;
+            max-width: 500px;
+            margin: 20px auto;
         }
 
         #idLeido {
+            font-size: 22px;
+            margin-top: 15px;
+        }
+
+        #resultado {
+            font-size: 26px;
+            font-weight: bold;
             margin-top: 10px;
-            font-size: 16px;
-            color: #444;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 
 <body>
 
-    <h2>Escanea tu código QR</h2>
+    <h2>Escanea el código QR</h2>
 
     <div id="reader"></div>
 
-    <div id="idLeido"></div>
-    <div id="resultado"></div>
+    <div class="box">
+        <div id="idLeido">Esperando lectura...</div>
+        <div id="resultado"></div>
+    </div>
 
     <script>
 
-        const readerDiv = document.getElementById("reader");
-        const resultado = document.getElementById("resultado");
-        const idLeido = document.getElementById("idLeido");
-
         const html5QrCode = new Html5Qrcode("reader");
+        const idLeido = document.getElementById("idLeido");
+        const resultado = document.getElementById("resultado");
 
         function registrarAsistencia(idAsistente) {
 
@@ -65,31 +80,35 @@
 
         function onScanSuccess(decodedText) {
 
-            // Mostrar ID escaneado
-            idLeido.innerHTML = "ID leído: <b>" + decodedText + "</b>";
+            idLeido.innerHTML = "ID leído: <strong>" + decodedText + "</strong>";
+            resultado.innerHTML = "";
 
-            // Registrar asistencia
             registrarAsistencia(decodedText);
 
-            // Pequeña pausa antes de volver a escanear
             html5QrCode.stop().then(() => {
-                setTimeout(iniciarCamara, 1500);
+                setTimeout(() => {
+                    iniciarCamara();
+                }, 1200);
             });
         }
 
         function iniciarCamara() {
             html5QrCode.start(
-                { facingMode: "environment" }, // Cámara trasera automática
+                { facingMode: { exact: "environment" } }, // Fuerza cámara trasera
                 {
-                    fps: 10,
-                    qrbox: 250
+                    fps: 12,
+                    qrbox: { width: 280, height: 280 }
                 },
                 onScanSuccess
-            );
+            ).catch(err => {
+                idLeido.innerHTML = "Permite el acceso a la cámara para continuar.";
+            });
         }
 
-        // Iniciar automáticamente
-        iniciarCamara();
+        // Inicia apenas carga la página
+        window.onload = function() {
+            iniciarCamara();
+        };
 
     </script>
 
