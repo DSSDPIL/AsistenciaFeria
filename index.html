@@ -47,15 +47,15 @@
             console.warn(errorMessage);
         }
         
-        let html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 250 },
-            onScanSuccess,
-            onScanError
-        );
+      const html5QrCodeScanner = new Html5QrcodeScanner(
+    "reader",
+    { fps: 10, qrbox: 250 },
+    false
+);
+html5QrCodeScanner.render(onScanSuccess);
     </script>
 </body>
 
 </html>
+
 
