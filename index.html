@@ -2,61 +2,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Lector QR - Feria 2026</title>
+    <title>Lector QR</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        h2 {
-            margin-top: 20px;
-        }
-
-        #reader {
-            width: 90%;
-            max-width: 500px;
-            margin: 20px auto;
-        }
-
-        #idLeido {
-            font-size: 22px;
-            margin-top: 15px;
-        }
-
-        #resultado {
-            font-size: 26px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .box {
-            background: white;
-            padding: 20px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-    </style>
 </head>
 
 <body>
 
-    <h2>Escanea el código QR</h2>
+    <h2>Escanea tu código QR</h2>
 
-    <div id="reader"></div>
+    <div id="reader" style="width:300px;"></div>
 
-    <div class="box">
-        <div id="idLeido">Esperando lectura...</div>
-        <div id="resultado"></div>
-    </div>
+    <p id="idLeido"></p>
+    <p id="resultado"></p>
 
     <script>
 
@@ -74,41 +31,31 @@
             iframe.src = url;
             document.body.appendChild(iframe);
 
-            resultado.innerHTML = "✅ Registro enviado";
-            resultado.style.color = "green";
+            resultado.innerHTML = "Registro enviado";
         }
 
         function onScanSuccess(decodedText) {
 
-            idLeido.innerHTML = "ID leído: <strong>" + decodedText + "</strong>";
-            resultado.innerHTML = "";
+            idLeido.innerHTML = "ID leído: " + decodedText;
 
             registrarAsistencia(decodedText);
 
             html5QrCode.stop().then(() => {
                 setTimeout(() => {
                     iniciarCamara();
-                }, 1200);
+                }, 1000);
             });
         }
 
         function iniciarCamara() {
             html5QrCode.start(
-                { facingMode: { exact: "environment" } }, // Fuerza cámara trasera
-                {
-                    fps: 12,
-                    qrbox: { width: 280, height: 280 }
-                },
+                { facingMode: "environment" },
+                { fps: 10, qrbox: 250 },
                 onScanSuccess
-            ).catch(err => {
-                idLeido.innerHTML = "Permite el acceso a la cámara para continuar.";
-            });
+            );
         }
 
-        // Inicia apenas carga la página
-        window.onload = function() {
-            iniciarCamara();
-        };
+        iniciarCamara();
 
     </script>
 
