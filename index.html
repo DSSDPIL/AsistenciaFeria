@@ -8,56 +8,51 @@
 
 <body>
 
-    <h2>Escanea tu código QR</h2>
+<h2>Escanea tu código QR</h2>
 
-    <div id="reader" style="width:300px;"></div>
+<div id="reader" style="width:300px;"></div>
 
-    <p id="idLeido"></p>
-    <p id="resultado"></p>
+<p id="mensaje"></p>
 
-    <script>
+<script>
 
-        const html5QrCode = new Html5Qrcode("reader");
-        const idLeido = document.getElementById("idLeido");
-        const resultado = document.getElementById("resultado");
+const html5QrCode = new Html5Qrcode("reader");
+const mensaje = document.getElementById("mensaje");
 
-        function registrarAsistencia(idAsistente) {
+function registrarAsistencia(id) {
 
-            const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" 
-                        + encodeURIComponent(idAsistente);
+    const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" + encodeURIComponent(id);
 
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            iframe.src = url;
-            document.body.appendChild(iframe);
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
 
-            resultado.innerHTML = "Registro enviado";
-        }
+    mensaje.innerHTML = "ID leído: " + id;
+}
 
-        function onScanSuccess(decodedText) {
+function onScanSuccess(decodedText) {
 
-            idLeido.innerHTML = "ID leído: " + decodedText;
+    registrarAsistencia(decodedText);
 
-            registrarAsistencia(decodedText);
+    html5QrCode.stop().then(() => {
+        setTimeout(() => {
+            iniciar();
+        }, 1000);
+    });
+}
 
-            html5QrCode.stop().then(() => {
-                setTimeout(() => {
-                    iniciarCamara();
-                }, 1000);
-            });
-        }
+function iniciar() {
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+    );
+}
 
-        function iniciarCamara() {
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                onScanSuccess
-            );
-        }
+iniciar();
 
-        iniciarCamara();
-
-    </script>
+</script>
 
 </body>
 </html>
