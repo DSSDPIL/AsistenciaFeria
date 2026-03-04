@@ -1,36 +1,83 @@
-<script>
-function registrarAsistencia(idAsistente) {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lector QR - Feria 2026</title>
 
-    const resultado = document.getElementById("resultado");
+    <!-- Librería del lector QR -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-    if (!idAsistente) {
-        resultado.innerHTML = "❌ Código inválido";
-        resultado.style.color = "red";
-        return;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 30px;
+        }
 
-    const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" 
-                + encodeURIComponent(idAsistente);
+        #reader {
+            width: 300px;
+            margin: auto;
+        }
 
-    // Crear iframe oculto
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
+        #resultado {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+    </style>
+</head>
 
-    // Mostrar resultado visual inmediato
-    resultado.innerHTML = "✅ Registro enviado";
-    resultado.style.color = "green";
-}
+<body>
 
-function onScanSuccess(decodedText) {
-    registrarAsistencia(decodedText);
-}
+    <h2>Escanea tu código QR</h2>
 
-const html5QrCodeScanner = new Html5QrcodeScanner(
-    "reader",
-    { fps: 10, qrbox: 250 },
-    false
-);
-html5QrCodeScanner.render(onScanSuccess);
-</script>
+    <div id="reader"></div>
+
+    <div id="resultado"></div>
+
+    <script>
+
+        function registrarAsistencia(idAsistente) {
+
+            const resultado = document.getElementById("resultado");
+
+            if (!idAsistente) {
+                resultado.innerHTML = "❌ Código inválido";
+                resultado.style.color = "red";
+                return;
+            }
+
+            const url = "https://script.google.com/macros/s/AKfycbxhcl4YaK4vfnkCfwp5R-YimbZQrLUONmPWZBGdZffG2FATHoMx5zfogfPUbgTwY1Lj/exec?id=" 
+                        + encodeURIComponent(idAsistente);
+
+            // Enviar sin abrir pestaña (iframe oculto)
+            const iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            iframe.src = url;
+            document.body.appendChild(iframe);
+
+            resultado.innerHTML = "✅ Registro enviado";
+            resultado.style.color = "green";
+        }
+
+
+        function onScanSuccess(decodedText) {
+            registrarAsistencia(decodedText);
+        }
+
+        function onScanFailure(error) {
+            // Solo ignora errores de lectura
+        }
+
+        const html5QrCodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: 250 },
+            false
+        );
+
+        html5QrCodeScanner.render(onScanSuccess);
+
+    </script>
+
+</body>
+</html>
